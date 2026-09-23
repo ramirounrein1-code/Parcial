@@ -10,10 +10,10 @@ if ($_SERVER["HTTP_HOST"] === "localhost" || $_SERVER["HTTP_HOST"] === "127.0.0.
     $usuario = "root";
     $contrasena = "";
 } else {
-    $host = "sql202.infinityfree.com";
-    $base_datos = "if0_42882884_rincon_del_saber";
-    $usuario = "if0_42882884";
-    $contrasena = "agustinramiro1";
+    $host = "";
+    $base_datos = "";
+    $usuario = "";
+    $contrasena = "";
 }
 try {
     $conexion = new PDO(
