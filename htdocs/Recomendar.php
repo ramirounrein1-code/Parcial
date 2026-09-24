@@ -5,10 +5,9 @@
  * ("Mis recomendaciones"). Recomendar un libro nuevo (o cancelar una
  * recomendación existente) se hace siempre desde el detalle del libro
  * (Detalle.php), así el profesor ve la ficha completa antes de
- * recomendar. Por eso esta pantalla ya no tiene el formulario
- * "Recomendar libro" con el desplegable de cualquier libro del
- * catálogo: solo muestra lo ya recomendado, con un botón "Detalles"
- * que lleva a Detalle.php (desde ahí también se cancela).
+ * recomendar. Esta pantalla solo muestra lo ya recomendado, con un
+ * botón "Detalles" que lleva a Detalle.php (desde ahí también se
+ * cancela).
  */
 
 session_set_cookie_params(['path' => '/']);

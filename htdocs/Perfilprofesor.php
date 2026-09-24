@@ -38,7 +38,7 @@ $totalCursos = (int) $filaCursos['total'];
 <?php
 $titulo = 'Mi perfil';
 $cssExtra = ['Perfil.css'];
-$sinAnimaciones = true; // pantalla de perfil: sin animaciones, a pedido
+$sinAnimaciones = true; // pantalla de perfil: queda estática, sin animación de entrada
 require 'componentes/head.php';
 ?>
 

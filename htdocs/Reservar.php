@@ -3,12 +3,8 @@
  * Reservar.php
  * Procesa el formulario "Reservar libro" / "Unirme a lista de espera"
  * de Detalle.php. No devuelve HTML propio: siempre redirige de vuelta a
- * Detalle.php?libro=... con ?ok=... o ?error=... según el caso.
- *
- * Antes este archivo era una copia de Reservas.php (la pantalla "Mis
- * reservas") y nunca procesaba el POST: por eso el botón "Confirmar
- * reserva" no hacía nada. Ahora sigue el mismo patrón que
- * Cancelarreserva.php.
+ * Detalle.php?libro=... con ?ok=... o ?error=... según el caso, con el
+ * mismo patrón que Cancelarreserva.php.
  */
 
 session_set_cookie_params(['path' => '/']);
@@ -34,6 +30,22 @@ if ($idLibro <= 0) {
 }
 
 $idEstudiante = (int) $_SESSION['estudiante_id'];
+
+// El <input type="date" min="..." max="..."> del modal en Detalle.php
+// ya limita esto del lado del navegador (de mañana a +30 días), pero
+// eso no evita que alguien mande cualquier texto directo por POST sin
+// pasar por el formulario. Acá se valida de verdad: si no tiene forma
+// de fecha real o cae fuera de ese mismo rango, se descarta y se usa
+// +7 días como valor por defecto.
+$fechaMinima = date('Y-m-d', strtotime('+1 day'));
+$fechaMaxima = date('Y-m-d', strtotime('+30 days'));
+$fechaValida = (bool) preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaDevolucion)
+    && $fechaDevolucion >= $fechaMinima
+    && $fechaDevolucion <= $fechaMaxima;
+
+if (!$fechaValida) {
+    $fechaDevolucion = date('Y-m-d', strtotime('+7 days'));
+}
 
 // El libro tiene que existir de verdad.
 $consultaLibro = $conexion->prepare('SELECT id_libro FROM libro WHERE id_libro = ?');
@@ -75,12 +87,8 @@ $ejemplar = $consultaEjemplar->fetch(PDO::FETCH_ASSOC);
 
 if ($ejemplar) {
     // Hay un ejemplar libre: se presta directo con la fecha de
-    // devolución que eligió el alumno en el modal (o +7 días si por
-    // algún motivo no llegó).
-    if ($fechaDevolucion === '') {
-        $fechaDevolucion = date('Y-m-d', strtotime('+7 days'));
-    }
-
+    // devolución ya validada arriba (o +7 días si no llegó una fecha
+    // válida).
     $idEjemplar = (int) $ejemplar['id_ejemplar'];
     $insertar = $conexion->prepare(
         'INSERT INTO prestamo (Id_ejemplar, Id_estudiante, fecha_prestamo, fecha_estimada_de_devolución, estado_prestamo)

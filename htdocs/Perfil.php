@@ -15,7 +15,7 @@ if ($haySesion) {
     $fila = $consulta->fetch(PDO::FETCH_ASSOC);
     $reservasActivas = $fila['total'];
 
-    // Antes este número salía de localStorage; ahora sale de la tabla
+    // Cantidad de libros en lista de espera del alumno, según la tabla
     // real `lista_espera`.
     $consultaEspera = $conexion->prepare(
         'SELECT COUNT(*) AS total FROM lista_espera WHERE Id_estudiante = ?'
@@ -31,7 +31,7 @@ if ($haySesion) {
 <?php
 $titulo = 'Mi perfil';
 $cssExtra = ['Perfil.css'];
-$sinAnimaciones = true; // pantalla de perfil: sin animaciones, a pedido
+$sinAnimaciones = true; // pantalla de perfil: queda estática, sin animación de entrada
 require 'componentes/head.php';
 ?>
 

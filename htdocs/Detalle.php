@@ -1,10 +1,10 @@
 <?php
 /**
  * Detalle.php
- * Reemplaza a Detalle.html. Ya no lee libros.js ni localStorage: todo sale
- * de la base (libro, ejemplar, prestamo, lista_espera) y todo lo que hace
- * el botón "Reservar" / "Unirme a lista de espera" se procesa en
- * Reservar.php y queda guardado de verdad.
+ * Muestra la ficha completa de un libro. Todo sale de la base (libro,
+ * ejemplar, prestamo, lista_espera) y todo lo que hace el botón
+ * "Reservar" / "Unirme a lista de espera" se procesa en Reservar.php
+ * y queda guardado en la base de datos.
  */
 
 session_set_cookie_params(['path' => '/']);
@@ -146,6 +146,8 @@ $anioPublicado = $libro['publicado'] ? date('Y', strtotime($libro['publicado']))
         require 'componentes/encabezado-volver.php';
         ?>
 
+        <div class="detalle-libro__cuerpo">
+
         <article class="detalle-libro">
             <figure class="detalle-libro__portada">
                 <img src="<?= htmlspecialchars($libro['portada'] ?? '') ?>"
@@ -171,6 +173,8 @@ $anioPublicado = $libro['publicado'] ? date('Y', strtotime($libro['publicado']))
                 </ul>
             </section>
         </article>
+
+        <div class="detalle-libro__panel">
 
         <ul class="detalle-libro__ficha">
             <li class="ficha-dato">
@@ -314,6 +318,10 @@ $anioPublicado = $libro['publicado'] ? date('Y', strtotime($libro['publicado']))
                     </button>
                 </form>
             <?php endif; ?>
+        </div>
+
+        </div>
+
         </div>
 
     </main>
@@ -475,8 +483,7 @@ $anioPublicado = $libro['publicado'] ? date('Y', strtotime($libro['publicado']))
 
     <?php
     // Ningún ítem del menú se marca activo acá: el detalle de un libro
-    // no es una de las 4 secciones principales (así se comportaba
-    // también antes de componentizar el nav).
+    // no es una de las 4 secciones principales de la navegación.
     $navActivo = '';
     require 'componentes/nav-inferior.php';
     ?>

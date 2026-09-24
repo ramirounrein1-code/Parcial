@@ -4,6 +4,15 @@
  * Muestra el formulario y, cuando llega el POST, valida email +
  * matrícula contra la tabla real `estudiante` (ahí la matrícula se
  * guarda tal cual, sin hash, así que se compara directo).
+ *
+ * Sanitización y validación (a la par de contacto.php):
+ *   - email: se sanea con filter_var(FILTER_SANITIZE_EMAIL) y se
+ *     valida el formato con filter_var(FILTER_VALIDATE_EMAIL) antes
+ *     de siquiera consultar la base.
+ *   - matrícula: se sanea con strip_tags()/trim() y se valida que sea
+ *     puramente numérica (así es como la muestra el placeholder del
+ *     campo, "104829"; ajustá el rango de dígitos si tu matrícula usa
+ *     otro formato).
  */
 
 session_set_cookie_params(['path' => '/']);
@@ -13,12 +22,27 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require 'Conexion.php';
 
-    $email = trim($_POST['email'] ?? '');
-    $matricula = trim($_POST['matricula'] ?? '');
+    // -----------------------------------------------------------------
+    // 1) Captura por POST + sanitización.
+    // -----------------------------------------------------------------
+    $email = trim(filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL));
+    $matricula = trim(strip_tags($_POST['matricula'] ?? ''));
 
+    // -----------------------------------------------------------------
+    // 2) Validación de formato (filter_var / regex) antes de tocar la
+    //    base de datos.
+    // -----------------------------------------------------------------
     if ($email === '' || $matricula === '') {
         $error = 'Completá todos los campos.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Ingresá un email válido.';
+    } elseif (!preg_match('/^[0-9]{4,12}$/', $matricula)) {
+        $error = 'La matrícula tiene que ser numérica.';
     } else {
+        // -------------------------------------------------------------
+        // 3) Consulta con PDO (prepared statement, ya a salvo de
+        //    inyección SQL más allá de la validación de arriba).
+        // -------------------------------------------------------------
         $consulta = $conexion->prepare(
             'SELECT id_estudiante, Nombre, Apellido, matricula, curso, email FROM estudiante WHERE email = ? AND matricula = ?'
         );
@@ -46,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php
 $titulo = 'Iniciar sesión';
 $cssExtra = ['Auth.css'];
-$sinAnimaciones = true; // pantalla de login: sin animaciones, a pedido
+$sinAnimaciones = true; // pantalla de login: queda estática, sin animación de entrada, para que el formulario esté disponible de inmediato
 require 'componentes/head.php';
 ?>
 

@@ -7,6 +7,12 @@
  *
  * La tabla `profesor` guarda la contraseña tal cual (sin hash), igual
  * que `estudiante` guarda la matrícula, así que se compara directo.
+ *
+ * Sanitización y validación (a la par de Login.php/contacto.php): el
+ * email se sanea con filter_var(FILTER_SANITIZE_EMAIL) y se valida el
+ * formato con filter_var(FILTER_VALIDATE_EMAIL) antes de consultar la
+ * base. La contraseña no tiene un "formato" que validar (puede tener
+ * cualquier carácter), así que solo se sanea con strip_tags()/trim().
  */
 
 session_set_cookie_params(['path' => '/']);
@@ -16,11 +22,13 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require 'Conexion.php';
 
-    $email = trim($_POST['email'] ?? '');
-    $contrasena = trim($_POST['contrasena'] ?? '');
+    $email = trim(filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL));
+    $contrasena = trim(strip_tags($_POST['contrasena'] ?? ''));
 
     if ($email === '' || $contrasena === '') {
         $error = 'Completá todos los campos.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Ingresá un email válido.';
     } else {
         $consulta = $conexion->prepare(
             'SELECT id_profesor, Nombre, Apellido, email FROM profesor WHERE email = ? AND contraseña = ?'
@@ -47,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php
 $titulo = 'Ingreso de profesores';
 $cssExtra = ['Auth.css'];
-$sinAnimaciones = true; // pantalla de login: sin animaciones, a pedido
+$sinAnimaciones = true; // pantalla de login: queda estática, sin animación de entrada, para que el formulario esté disponible de inmediato
 require 'componentes/head.php';
 ?>
 

@@ -1,14 +1,4 @@
 <?php
-/**
- * Cancelarreserva.php
- * Procesa el formulario "Cancelar reserva" / "Salir de la lista de espera"
- * de Detalle.php. No devuelve HTML propio: siempre redirige de vuelta a
- * Detalle.php?libro=... con ?ok=... o ?error=... según el caso.
- *
- * tipo=reserva  -> borra directamente la fila del préstamo activo en la
- *                  tabla `prestamo` (deja el ejemplar libre de nuevo).
- * tipo=espera   -> borra al alumno de `lista_espera` para ese libro.
- */
 
 session_set_cookie_params(['path' => '/']);
 session_start();
@@ -35,8 +25,7 @@ if ($idLibro <= 0 || !in_array($tipo, ['reserva', 'espera'], true)) {
 $idEstudiante = (int) $_SESSION['estudiante_id'];
 
 if ($tipo === 'reserva') {
-    // Borramos de verdad el préstamo activo de este alumno para este libro
-    // (antes solo se marcaba estado_prestamo = 0, pero quedaba la fila).
+    // Elimina el préstamo activo de este alumno para este libro (borrado real de la fila, no un cambio de estado).
     $borrarPrestamo = $conexion->prepare(
         'DELETE p FROM prestamo p
          JOIN ejemplar e ON e.id_ejemplar = p.Id_ejemplar

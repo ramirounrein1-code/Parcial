@@ -20,8 +20,7 @@ if ($haySesion) {
     $consulta->execute([$_SESSION['estudiante_id']]);
     $prestamos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-    // Pestaña "Lista de espera": sale de la tabla real `lista_espera`
-    // (antes se leía de localStorage y se perdía al cambiar de navegador).
+    // Pestaña "Lista de espera": sale de la tabla real `lista_espera`.
     // El puesto se calcula al vuelo contando, para el mismo libro, cuántas
     // anotaciones son iguales o más antiguas que la nuestra (por id_lista,
     // que respeta el orden de inscripción). Así, si alguien más adelante
@@ -75,8 +74,8 @@ require 'componentes/head.php';
                 aria-selected="false">Lista de espera</button>
         </div>
 
-        <!-- Pestaña "Activas": esta parte ya viene armada desde PHP con
-             los préstamos reales de la tabla `prestamo`. -->
+        <!-- Pestaña "Activas": préstamos reales de la tabla `prestamo`,
+             armados directamente en PHP. -->
         <section id="panel-activas" class="reservas-lista">
             <?php if (!$haySesion): ?>
                 <p class="reservas-lista__vacio">
@@ -190,9 +189,9 @@ require 'componentes/head.php';
     <script>
         (function () {
             // -----------------------------------------------------------------
-            // Tabs: "Activas" y "Lista de espera" ya vienen armadas desde PHP
-            // con datos reales de la base (prestamo y lista_espera). El JS
-            // acá solo alterna cuál de las dos se ve.
+            // Tabs: "Activas" y "Lista de espera" se arman en PHP con datos
+            // reales de la base (prestamo y lista_espera). El JS acá solo
+            // alterna cuál de las dos se ve.
             // -----------------------------------------------------------------
             var tabActivas = document.getElementById('tab-activas');
             var tabEspera = document.getElementById('tab-espera');
