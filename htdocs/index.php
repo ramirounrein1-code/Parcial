@@ -1,7 +1,17 @@
 <?php
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
+    // Mostrar errores de PHP en pantalla solo en localhost (mismo criterio
+    // que usa Conexion.php para elegir la base). En producción
+    // (InfinityFree) esto queda apagado: un error ahí no debe exponer
+    // rutas de archivo ni consultas SQL a quien esté navegando el sitio.
+    if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1') {
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+    } else {
+        ini_set('display_errors', 0);
+        ini_set('display_startup_errors', 0);
+        error_reporting(0);
+    }
 
     session_set_cookie_params(['path' => '/']);
     session_start();
